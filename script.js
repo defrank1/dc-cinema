@@ -1,66 +1,64 @@
-console.log("🔧 script.js loaded");
+console.log('🔧 script.js loaded');
 
-const proxy = 'https://api.allorigins.win/raw?url=';
-const miracleURL = 'https://themiracletheatre.com/calendar/';
+async function fetchMiracle() {
+  try {
+    const response = await fetch('https://themiracletheatre.com/calendar/');
+    const html = await response.text();
 
-fetch(proxy + encodeURIComponent(miracleURL))
-  .then(res => res.text())
-  .then(html => {
-    console.log("✅ Fetched Miracle HTML");
     const parser = new DOMParser();
-    const doc = parser.parseFromString(html, 'text/html');
-    const list = document.getElementById('miracle-list');
+    const dom = parser.parseFromString(html, 'text/html');
 
-    const events = doc.querySelectorAll('h3.mec-event-title');
-    if (!events.length) {
-      list.innerHTML = "<li>No upcoming events found.</li>";
-      return;
-    }
+    // Select all event titles (h3 with class mec-event-title)
+    const events = dom.querySelectorAll('h3.mec-event-title');
+
+    const list = document.getElementById('miracle-list');
+    list.innerHTML = '';
+
+    const today = new Date();
+    const sevenDaysFromNow = new Date();
+    sevenDaysFromNow.setDate(today.getDate() + 7);
 
     events.forEach(h3 => {
-  const a = h3.querySelector('a');
-  const title = a?.textContent.trim();
-  const url = a?.href;
-  const eventBox = h3.closest('.mec-event-article');
+      const a = h3.querySelector('a');
+      const title = a?.textContent.trim();
+      const url = a?.href;
+      const eventBox = h3.closest('.mec-event-article');
 
-  let dateStr = '';
-  if (eventBox) {
-    dateStr = eventBox.querySelector('.mec-event-datetime')?.textContent.trim()
-        || eventBox.querySelector('.mec-start-date')?.textContent.trim()
-        || eventBox.querySelector('time')?.getAttribute('datetime')
-        || '';
+      // Extract date string from possible selectors
+      let dateStr = '';
+      if (eventBox) {
+        dateStr = eventBox.querySelector('.mec-event-datetime')?.textContent.trim()
+          || eventBox.querySelector('.mec-start-date')?.textContent.trim()
+          || eventBox.querySelector('time')?.getAttribute('datetime')
+          || '';
+      }
+      if (!dateStr) return; // Skip if no date string
+
+      // Parse dateStr to Date object
+      let eventDate = new Date(dateStr);
+      if (isNaN(eventDate)) {
+        eventDate = new Date(Date.parse(dateStr));
+      }
+      if (isNaN(eventDate)) {
+        return; // Skip if invalid date
+      }
+
+      // Filter for events in next 7 days
+      if (eventDate >= today && eventDate <= sevenDaysFromNow) {
+        const li = document.createElement('li');
+        li.innerHTML = `<a href="${url}" target="_blank" rel="noopener noreferrer">${title}</a><div class="date">${dateStr}</div>`;
+        list.appendChild(li);
+      }
+    });
+
+    if (!list.hasChildNodes()) {
+      list.innerHTML = '<li>No upcoming events in the next 7 days.</li>';
+    }
+
+    console.log('✅ Miracle events loaded');
+  } catch (error) {
+    console.error('Error fetching Miracle calendar:', error);
   }
+}
 
-  if (!dateStr) return; // Skip if no date
-
-  // Try to parse the date string into a Date object
-  let eventDate = new Date(dateStr);
-
-  // If parsing fails, try alternate parsing (some date strings might need it)
-  if (isNaN(eventDate)) {
-    // For example, if dateStr is like "Sat, Aug 12 8:00 PM", try this:
-    eventDate = new Date(Date.parse(dateStr));
-  }
-  if (isNaN(eventDate)) {
-    // If still invalid, skip event
-    return;
-  }
-
-  const today = new Date();
-  const sevenDaysFromNow = new Date();
-  sevenDaysFromNow.setDate(today.getDate() + 7);
-
-  // Include event only if its date is between today and 7 days ahead
-  if (eventDate >= today && eventDate <= sevenDaysFromNow) {
-    const li = document.createElement('li');
-    li.innerHTML = `<a href="${url}" target="_blank">${title}</a><div class="date">${dateStr}</div>`;
-    list.appendChild(li);
-  }
-});
-
-
-  })
-  .catch(err => {
-    console.error("❌ Failed to fetch Miracle data:", err);
-    document.getElementById('miracle-list').innerHTML = "<li>Error loading events.</li>";
-  });
+window.addEventListener('DOMContentLoaded', fetchMiracle);
