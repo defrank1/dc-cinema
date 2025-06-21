@@ -18,19 +18,26 @@ fetch(proxy + encodeURIComponent(miracleURL))
     }
 
     events.forEach(h3 => {
-      const a = h3.querySelector('a');
-      const title = a?.textContent.trim();
-      const url = a?.href;
-      const eventBox = h3.closest('.mec-event-article');
-      const dateEl = eventBox?.querySelector('.mec-start-date, .mec-event-datetime');
-      const date = dateEl ? dateEl.textContent.trim() : 'Date not found';
+  const a = h3.querySelector('a');
+  const title = a?.textContent.trim();
+  const url = a?.href;
+  const eventBox = h3.closest('.mec-event-article');
+  
+  let date = 'Date not found';
+  if (eventBox) {
+    date = eventBox.querySelector('.mec-event-datetime')?.textContent.trim()
+        || eventBox.querySelector('.mec-start-date')?.textContent.trim()
+        || eventBox.querySelector('time')?.getAttribute('datetime')
+        || 'Date not found';
+  }
 
-      if (title && url) {
-        const li = document.createElement('li');
-        li.innerHTML = `<a href="${url}" target="_blank">${title}</a><div class="date">${date}</div>`;
-        list.appendChild(li);
-      }
-    });
+  if (title && url) {
+    const li = document.createElement('li');
+    li.innerHTML = `<a href="${url}" target="_blank">${title}</a><div class="date">${date}</div>`;
+    list.appendChild(li);
+  }
+});
+
   })
   .catch(err => {
     console.error("❌ Failed to fetch Miracle data:", err);
