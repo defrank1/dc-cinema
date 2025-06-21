@@ -2,7 +2,7 @@ console.log('🔧 script.js loaded');
 
 async function fetchMiracle() {
   try {
-    const response = await fetch('https://themiracletheatre.com/calendar/');
+const response = await fetch('https://cors-anywhere.herokuapp.com/https://themiracletheatre.com/calendar/');
     const html = await response.text();
 
     const parser = new DOMParser();
