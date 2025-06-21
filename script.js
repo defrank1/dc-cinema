@@ -22,21 +22,42 @@ fetch(proxy + encodeURIComponent(miracleURL))
   const title = a?.textContent.trim();
   const url = a?.href;
   const eventBox = h3.closest('.mec-event-article');
-  
-  let date = 'Date not found';
+
+  let dateStr = '';
   if (eventBox) {
-    date = eventBox.querySelector('.mec-event-datetime')?.textContent.trim()
+    dateStr = eventBox.querySelector('.mec-event-datetime')?.textContent.trim()
         || eventBox.querySelector('.mec-start-date')?.textContent.trim()
         || eventBox.querySelector('time')?.getAttribute('datetime')
-        || 'Date not found';
+        || '';
   }
 
-  if (title && url) {
+  if (!dateStr) return; // Skip if no date
+
+  // Try to parse the date string into a Date object
+  let eventDate = new Date(dateStr);
+
+  // If parsing fails, try alternate parsing (some date strings might need it)
+  if (isNaN(eventDate)) {
+    // For example, if dateStr is like "Sat, Aug 12 8:00 PM", try this:
+    eventDate = new Date(Date.parse(dateStr));
+  }
+  if (isNaN(eventDate)) {
+    // If still invalid, skip event
+    return;
+  }
+
+  const today = new Date();
+  const sevenDaysFromNow = new Date();
+  sevenDaysFromNow.setDate(today.getDate() + 7);
+
+  // Include event only if its date is between today and 7 days ahead
+  if (eventDate >= today && eventDate <= sevenDaysFromNow) {
     const li = document.createElement('li');
-    li.innerHTML = `<a href="${url}" target="_blank">${title}</a><div class="date">${date}</div>`;
+    li.innerHTML = `<a href="${url}" target="_blank">${title}</a><div class="date">${dateStr}</div>`;
     list.appendChild(li);
   }
 });
+
 
   })
   .catch(err => {
