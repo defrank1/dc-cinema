@@ -1,73 +1,72 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>DCinema</title>
-  <style>
-    body {
-      font-family: sans-serif;
-      background: #f9f9f9;
-      padding: 2rem;
-      max-width: 600px;
-      margin: auto;
-    }
-    h1 {
-      font-size: 1.5rem;
-      margin-bottom: 1rem;
-    }
-    ul {
-      list-style: none;
-      padding: 0;
-    }
-    li {
-      margin-bottom: 1rem;
-      padding: 1rem;
-      background: white;
-      border-radius: 8px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    }
-    a {
-      color: #0077cc;
-      text-decoration: none;
-      font-weight: bold;
-    }
-    .date {
-      font-size: 0.9rem;
-      color: #666;
-    }
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>DC Cinema Upcoming Movies</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    margin: 2rem;
+    background: #f9f9f9;
+    color: #222;
+  }
+  h1 {
+    margin-bottom: 1rem;
+  }
+  #events-list > div {
+    background: white;
+    margin-bottom: 1rem;
+    padding: 1rem;
+    border-radius: 6px;
+    box-shadow: 0 0 5px rgba(0,0,0,0.1);
+  }
+  #events-list > div span {
+    display: block;
+    margin-top: 0.3rem;
+    color: #666;
+    font-size: 0.9rem;
+  }
+</style>
 </head>
 <body>
-    <div id="miracle-events">
-  <h2>Upcoming at Miracle Theater</h2>
-  <div id="events-list">Loading events...</div>
-</div>
+
+<h1>Upcoming at Miracle Theater</h1>
+<div id="events-list">Loading...</div>
 
 <script>
-  const apiUrl = 'https://f263e943-5f18-4a3a-ac8d-b22e018e2a10-00-375agdtikcet1.riker.replit.dev/miracle-events';
+  async function loadEvents() {
+    const container = document.getElementById('events-list');
+    try {
+      const response = await fetch('https://f263e943-5f18-4a3a-ac8d-b22e018e2a10-00-375agdtikcet1.riker.replit.dev/miracle-events');
+      if (!response.ok) throw new Error('Network response was not ok');
 
-  fetch(apiUrl)
-    .then(response => response.json())
-    .then(events => {
-      const container = document.getElementById('events-list');
+      const events = await response.json();
+      container.innerHTML = '';
+
       if (events.length === 0) {
         container.textContent = 'No upcoming events found.';
         return;
       }
-      container.innerHTML = events.map(ev => `
-        <p><a href="${ev.url}" target="_blank" rel="noopener">${ev.title}</a> ${ev.date ? `— ${ev.date}` : ''}</p>
-      `).join('');
-    })
-    .catch(error => {
-      document.getElementById('events-list').textContent = 'Failed to load events.';
-      console.error('Error fetching events:', error);
-    });
+
+      events.forEach(event => {
+        const div = document.createElement('div');
+        div.textContent = event.title;
+
+        const dateSpan = document.createElement('span');
+        dateSpan.textContent = event.datetime || 'Date/time not available';
+
+        div.appendChild(dateSpan);
+        container.appendChild(div);
+      });
+    } catch (error) {
+      container.textContent = 'Failed to load events.';
+      console.error('Error loading events:', error);
+    }
+  }
+
+  loadEvents();
 </script>
 
-  <h1>🎬 Upcoming at Miracle Theatre</h1>
-  <ul id="miracle-list"></ul>
-
-  <script src="script.js"></script>
 </body>
 </html>
