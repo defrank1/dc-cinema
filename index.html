@@ -39,6 +39,32 @@
   </style>
 </head>
 <body>
+    <div id="miracle-events">
+  <h2>Upcoming at Miracle Theater</h2>
+  <div id="events-list">Loading events...</div>
+</div>
+
+<script>
+  const apiUrl = 'https://f263e943-5f18-4a3a-ac8d-b22e018e2a10-00-375agdtikcet1.riker.replit.dev/miracle-events';
+
+  fetch(apiUrl)
+    .then(response => response.json())
+    .then(events => {
+      const container = document.getElementById('events-list');
+      if (events.length === 0) {
+        container.textContent = 'No upcoming events found.';
+        return;
+      }
+      container.innerHTML = events.map(ev => `
+        <p><a href="${ev.url}" target="_blank" rel="noopener">${ev.title}</a> ${ev.date ? `— ${ev.date}` : ''}</p>
+      `).join('');
+    })
+    .catch(error => {
+      document.getElementById('events-list').textContent = 'Failed to load events.';
+      console.error('Error fetching events:', error);
+    });
+</script>
+
   <h1>🎬 Upcoming at Miracle Theatre</h1>
   <ul id="miracle-list"></ul>
 
