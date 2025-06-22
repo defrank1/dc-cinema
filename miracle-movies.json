@@ -1,0 +1,17 @@
+[
+  {
+    "theater": "The Miracle Theatre",
+    "movies": [
+      { "title": "Soul", "date": "June 21, 2025", "time": "2:00 PM – 3:40 PM" },
+      { "title": "Dustin Ross Live!", "date": "June 21, 2025", "time": "6:30 PM" },
+      { "title": "Star Wars: Episode III – Revenge of the Sith (20th Anniversary)", "date": "June 22, 2025", "time": "2:00 PM – 4:20 PM" },
+      { "title": "Karate Kid: Legends", "date": "June 22, 2025", "time": "5:00 PM – 6:34 PM" },
+      { "title": "Star Wars: Episode III – Revenge of the Sith (20th Anniversary)", "date": "June 23, 2025", "time": "7:00 PM – 9:20 PM" },
+      { "title": "We Are Guardians", "date": "June 25, 2025", "time": "7:00 PM – 8:25 PM" },
+      { "title": "Karate Kid: Legends", "date": "June 26, 2025", "time": "7:00 PM – 8:34 PM" },
+      { "title": "The Wizard of Oz", "date": "June 27, 2025", "time": "7:00 PM – 8:42 PM" },
+      { "title": "The Wizard of Oz", "date": "July 2, 2025", "time": "7:00 PM – 8:42 PM" },
+      { "title": "The Bad Guys", "date": "July 3, 2025", "time": "10:30 AM – 12:10 PM" }
+    ]
+  }
+]
